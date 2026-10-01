@@ -471,30 +471,37 @@ const apps = [
    СОЗДАНИЕ КНОПОК
 
 ========================================= */
+function renderApps() {
 const appList =
-
     document.getElementById("app-list");
-    apps.forEach((app, index) => {
-      const card =
-      document.createElement("div");
-      card.className = "app-card";
-      card.innerHTML = `
+
+appList.innerHTML = "";
+
+apps.forEach((app, index) => {
+
+    const card =
+        document.createElement("div");
+
+    card.className = "app-card";
+
+    card.innerHTML = `
         <div class="app-name">
-
             ${app.name}
-
         </div>
-           <div class="app-description">
 
+        <div class="app-description">
             ${app.description}
-
         </div>
-     `;
-       card.addEventListener("click", function() {
-       openDetails(index);
+    `;
+
+    card.addEventListener("click", function() {
+        openDetails(index);
     });
+
     appList.appendChild(card);
 });
+}
+renderApps();
 
 /* =========================================
 
