@@ -587,7 +587,22 @@ function openDetails(index) {
 
    modal.show();
 }
+function showStepPhoto(id) {
+const photo = stepPhotos[id];
 
+if (!photo) {
+    return;
+}
+
+document.getElementById("stepPhoto").src = photo;
+
+document.getElementById("photoModal").style.display = "flex";
+}
+function closeStepPhoto() {
+document.getElementById("photoModal").style.display = "none";
+
+document.getElementById("stepPhoto").src = "";
+}
 </script>
 </body>
 </html>
