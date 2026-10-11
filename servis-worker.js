@@ -13,14 +13,8 @@ const urlsToCache = [
     "./images/open-shift-2.jpg",
     "./images/open-shift-3.jpg",
     "./images/open-shift-4.jpg",
-    "./images/open-shift-5.jpg",
-    "./images/open-shift-6.jpg",
-    "./images/open-shift-7.jpg",
-    "./images/open-shift-8.jpg",
-    "./images/open-shift-9.jpg",
-    "./images/open-shift-10.jpg",
-    "./images/open-shift-11.jpg",
-    "./images/open-shift-12.jpg"
+    "./images/open-shift-5.jpg"
+    
 ];
 
 // Установка и кэширование
