@@ -152,10 +152,13 @@
   
    <body>
      <div class="container">
-    <a href="javascript:void(0)" onclick="shareCard()">📤 share</a>       
+           
         <div id="app-list"></div>
      </div>
-
+     <div id="sharePanel" class="share-panel">
+     <button id="shareHandle" class="share-handle" onclick="document.getElementById('sharePanel').classList.toggle('open')">▲</button>
+     <a href="javascript:void(0)" onclick="shareCard()">📤 share</a>
+   </div>
       <!-- Modal -->
      <div
      class="modal fade"
