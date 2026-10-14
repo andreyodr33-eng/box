@@ -25,7 +25,9 @@ const urlsToCache = [
      "./images/open-shift-14.jpg",
      "./images/open-shift-15.jpg",
      "./images/open-shift-16.jpg",
-     "./images/open-shift-17.jpg"
+     "./images/open-shift-17.jpg",
+      "./images/open-shift-18.jpg",
+      "./images/open-shift-19.jpg"
     
     
     
