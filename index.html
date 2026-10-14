@@ -816,27 +816,30 @@ document.getElementById("photoModal").style.display = "none";
 
 document.getElementById("stepPhoto").src = "";
 }
-  // -------------------- ЗАСТАВКА --------------------
+    //ЗАСТАВКА    
+window.addEventListener(
+    "load",
+    ()=>{
 
-    window.addEventListener(
-        "load",
-        () => {
+        setTimeout(
+            ()=>{
 
-            setTimeout(
-                () => {
+                document
+                    .getElementById(
+                        "splash"
+                    )
+                    .style.display =
+                    "none";
 
-                    document
-                        .getElementById("splash")
-                        .style.display =
-                        "none";
+            },
 
-                },
+            1000
 
-                1000
-            );
+        );
 
-        }
-    );
+    }
+);    
+
   
 </script>
 <script>
