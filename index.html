@@ -816,41 +816,12 @@ document.getElementById("photoModal").style.display = "none";
 
 document.getElementById("stepPhoto").src = "";
 }
-     // ЗАСТАВКА
-
-function hideSplash() {
-
-    setTimeout(() => {
-
-        const splash = document.getElementById("splash");
-
-        if (splash) {
-
-            splash.style.display = "none";
-
-        }
-
-    }, 1000);
-
-}
-
-if (document.readyState === "loading") {
-
-    document.addEventListener(
-
-        "DOMContentLoaded",
-
-        hideSplash,
-
-        { once: true }
-
-    );
-
-} else {
-
-    hideSplash();
-
-}   
+     
+// ЗАСТАВКА
+setTimeout(() => {
+    document.getElementById("splash").style.display = "none";
+}, 1000);
+  
 
   
 </script>
