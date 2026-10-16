@@ -1,9 +1,9 @@
 const CACHE_NAME = "box-pwa-v1";
 
 const urlsToCache = [
-  "./",
-  "./index.html",
-  "./manifest.json",
+    "./",
+    "./index.html",
+    "./manifest.json",
 
     "./icon-32.png",
     "./icon-180.png",
