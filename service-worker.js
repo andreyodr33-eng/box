@@ -1,4 +1,4 @@
-const CACHE_NAME = "box-pwa-v1";
+const CACHE_NAME = "box-pwa-v2";
 
 const urlsToCache = [
     "./",
@@ -86,13 +86,54 @@ self.addEventListener("fetch", event => {
  if (url.origin !== self.location.origin) {
      return;
  }    
-  event.respondWith(
-    caches.open(CACHE_NAME)
-      .then(cache =>
-        cache.match(event.request)
-          .then(response =>
-            response || fetch(event.request)
-          )
-      )
+event.respondWith(
+
+        fetch(request)
+
+            .then(response => {
+
+                if (response.ok && response.type === “basic”) {
+
+                    const copy = response.clone();
+
+                    event.waitUntil(
+
+                        caches.open(CACHE_NAME)
+
+                            .then(cache =>
+
+                                cache.put(request, copy)
+
+                            )
+
+                    );
+
+                }
+
+                return response;
+
+            })
+
+            .catch(async () => {
+
+                const cached = await caches.match(request);
+
+                if (cached) {
+
+                    return cached;
+
+                }
+
+                // Офлайн-запас для открытия приложения
+
+                if (request.mode === “navigate”) {
+
+                    return await caches.match(“./index.html”);
+
+                }
+
+                return Response.error();
+          
+            })
   );
 });
