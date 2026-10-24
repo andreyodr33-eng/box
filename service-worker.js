@@ -44,7 +44,9 @@ const urlsToCache = [
       "./images/open-shift-33.jpg",
       "./images/open-shift-34.jpg",
       "./images/open-shift-35.jpg",
-      "./images/open-shift-36.jpg"
+      "./images/open-shift-36.jpg",
+      "./images/open-shift-37.jpg",
+      "./images/open-shift-38.jpg"
 ];
 
 // Установка и кэширование
