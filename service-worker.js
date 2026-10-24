@@ -78,10 +78,14 @@ self.addEventListener("activate", event => {
 
 // Сначала ищем файл в кэше Box, затем обращаемся к сети
 self.addEventListener("fetch", event => {
-  if (event.request.method !== "GET") {
+    const request = event.request;
+  if (request.method !== "GET") {
     return;
   }
-
+ const url = new URL(request.url);
+ if (url.origin !== self.location.origin) {
+     return;
+ }    
   event.respondWith(
     caches.open(CACHE_NAME)
       .then(cache =>
