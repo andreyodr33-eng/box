@@ -1,4 +1,4 @@
-const CACHE_NAME = "box-pwa-v2";
+const CACHE_NAME = "box-pwa-v3";
 
 const urlsToCache = [
     "./",
@@ -95,7 +95,7 @@ event.respondWith(
 
             .then(response => {
 
-                if (response.ok && response.type === “basic”) {
+                if (response.ok && response.type === "basic") {
 
                     const copy = response.clone();
 
@@ -129,9 +129,9 @@ event.respondWith(
 
                 // Офлайн-запас для открытия приложения
 
-                if (request.mode === “navigate”) {
+                if (request.mode === "navigate") {
 
-                    return await caches.match(“./index.html”);
+                    return await caches.match("./index.html");
 
                 }
 
