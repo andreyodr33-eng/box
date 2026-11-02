@@ -1,4 +1,4 @@
-const CACHE_NAME = "box-pwa-v3";
+const CACHE_NAME = "box-pwa-v4";
 
 const urlsToCache = [
     "./",
@@ -80,65 +80,75 @@ self.addEventListener("activate", event => {
       .then(() => self.clients.claim())
   );
 });
-
-// Сначала ищем файл в кэше Box, затем обращаемся к сети
-self.addEventListener("fetch", event => {
-    const request = event.request;
-  if (request.method !== "GET") {
+// Фотографии: сначала кэш, затем сеть.
+// Остальные файлы: сначала сеть, затем кэш.
+self.addEventListener("fetch", event => { const request = event.request;
+if (request.method !== "GET") {
     return;
-  }
- const url = new URL(request.url);
- if (url.origin !== self.location.origin) {
-     return;
- }    
-event.respondWith(
+}
 
-        fetch(request)
+const url = new URL(request.url);
 
-            .then(response => {
+if (url.origin !== self.location.origin) {
+    return;
+}
 
-                if (response.ok && response.type === "basic") {
+const isPhoto = url.pathname.includes("/images/");
 
+if (isPhoto) {
+    event.respondWith(
+        caches.match(request).then(cached => {
+            if (cached) {
+                return cached;
+            }
+
+            return fetch(request).then(response => {
+                if (response.ok) {
                     const copy = response.clone();
 
                     event.waitUntil(
-
-                        caches.open(CACHE_NAME)
-
-                            .then(cache =>
-
-                                cache.put(request, copy)
-
-                            )
-
+                        caches.open(CACHE_NAME).then(cache =>
+                            cache.put(request, copy)
+                        )
                     );
-
                 }
 
                 return response;
+            });
+        })
+    );
 
-            })
+    return;
+}
 
-            .catch(async () => {
+event.respondWith(
+    fetch(request)
+        .then(response => {
+            if (response.ok && response.type === "basic") {
+                const copy = response.clone();
 
-                const cached = await caches.match(request);
+                event.waitUntil(
+                    caches.open(CACHE_NAME).then(cache =>
+                        cache.put(request, copy)
+                    )
+                );
+            }
 
-                if (cached) {
+            return response;
+        })
+        .catch(async () => {
+            const cached = await caches.match(request);
 
-                    return cached;
+            if (cached) {
+                return cached;
+            }
 
-                }
+            if (request.mode === "navigate") {
+                return await caches.match("./index.html");
+            }
 
-                // Офлайн-запас для открытия приложения
-
-                if (request.mode === "navigate") {
-
-                    return await caches.match("./index.html");
-
-                }
-
-                return Response.error();
-          
-            })
-  );
+            return Response.error();
+        })
+     );
 });
+
