@@ -1,6 +1,6 @@
-const CACHE_NAME = "box-pwa-v4";
+const CACHE_NAME = "box-pwa-v5";
 
-const urlsToCache = [
+const APP_FILES = [
     "./",
     "./index.html",
     "./manifest.json",
@@ -61,101 +61,122 @@ const urlsToCache = [
       "./images/open-shift-50.jpg"
 ];
 
-// Установка и кэширование
+
+// =====================================
+// УСТАНОВКА
+// =====================================
+
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting())
-  );
+
+event.waitUntil((async () => {
+
+const cache = await caches.open(CACHE_NAME);
+
+for (const file of APP_FILES) {
+
+  try {
+    await cache.add(file);
+  } catch (error) {
+    console.warn("Не удалось сохранить файл:", file, error);
+  }
+
+}
+
+await self.skipWaiting();
+})());
+
 });
 
-// Активация: удаляем только старые кэши Box
+// =====================================
+// АКТИВАЦИЯ
+// =====================================
+
 self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys =>
-        Promise.all(
-          keys
-            .filter(key =>
-              key.startsWith("box-pwa-") &&
-              key !== CACHE_NAME
-            )
-            .map(key => caches.delete(key))
-        )
-      )
-      .then(() => self.clients.claim())
-  );
+
+event.waitUntil((async () => {
+
+const names = await caches.keys();
+
+await Promise.all(
+  names
+    .filter(name =>
+      name.startsWith("bar-pwa-") &&
+      name !== CACHE_NAME
+    )
+    .map(name => caches.delete(name))
+);
+
+await self.clients.claim();
+})());
+
 });
-// Фотографии: сначала кэш, затем сеть.
-// Остальные файлы: сначала сеть, затем кэш.
-self.addEventListener("fetch", event => { const request = event.request;
-if (request.method !== "GET") {
-    return;
+
+// =====================================
+// ЗАПРОСЫ
+// =====================================
+
+self.addEventListener("fetch", event => {
+
+const request = event.request;
+
+if (request.method !== "GET") return;
+
+event.respondWith((async () => {
+
+const cache = await caches.open(CACHE_NAME);
+
+// Проверяем наличие файла в кэше
+const saved = await cache.match(request);
+
+if (saved) {
+  return saved;
 }
 
-const url = new URL(request.url);
+// Если файл отсутствует в кэше,
+// загружаем его из интернета
+try {
 
-if (url.origin !== self.location.origin) {
-    return;
+  const response = await fetch(request);
+
+  // Сохраняем успешный ответ
+  if (response.ok || response.type === "opaque") {
+
+    try {
+      await cache.put(request, response.clone());
+    } catch (error) {
+      console.warn("Не удалось сохранить:", request.url, error);
+    }
+
+  }
+
+  return response;
+
+} catch (error) {
+
+  // Если нет интернета,
+  // возвращаем сохранённую главную страницу
+  if (request.mode === "navigate") {
+
+    const index = await cache.match("./index.html");
+
+    if (index) return index;
+
+  }
+
+  // Остальные недоступные файлы
+  return new Response("", {
+    status: 503,
+    statusText: "Файл недоступен офлайн"
+  });
+
 }
+})());
 
-const isPhoto = url.pathname.includes("/images/");
-
-if (isPhoto) {
-    event.respondWith(
-        caches.match(request).then(cached => {
-            if (cached) {
-                return cached;
-            }
-
-            return fetch(request).then(response => {
-                if (response.ok) {
-                    const copy = response.clone();
-
-                    event.waitUntil(
-                        caches.open(CACHE_NAME).then(cache =>
-                            cache.put(request, copy)
-                        )
-                    );
-                }
-
-                return response;
-            });
-        })
-    );
-
-    return;
-}
-
-event.respondWith(
-    fetch(request)
-        .then(response => {
-            if (response.ok && response.type === "basic") {
-                const copy = response.clone();
-
-                event.waitUntil(
-                    caches.open(CACHE_NAME).then(cache =>
-                        cache.put(request, copy)
-                    )
-                );
-            }
-
-            return response;
-        })
-        .catch(async () => {
-            const cached = await caches.match(request);
-
-            if (cached) {
-                return cached;
-            }
-
-            if (request.mode === "navigate") {
-                return await caches.match("./index.html");
-            }
-
-            return Response.error();
-        })
-     );
 });
+
+
+
+
+
+
 
